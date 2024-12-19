@@ -1,4 +1,5 @@
 import com.google.gson.annotations.Expose;
+
 import java.time.LocalDate; /* Hier werdem die Klassen LocalDate und LocalTime aus dem Java.time packet importiert
                             *  Dadurch wird später bei den Datums und Zeit Eingabe gewährleistet dass alles richtig
                             *  formatiert ist*/
@@ -19,10 +20,10 @@ public class Veranstaltung {
     private String ort;
 
     @Expose
-    private String uhrzeit;
+    private LocalTime uhrzeit;
 
     @Expose
-    private String datum;
+    private LocalDate datum;
 
  // Hier wird der Konstruktor initialisiert - wenn Veranstaltungsobjekt erstellt wird, werden folgende Attribute mitgegeben:
 
@@ -31,8 +32,8 @@ public class Veranstaltung {
         this.dresscode = dresscode;
         this.typ = typ;
         this.ort = ort;
-        this.uhrzeit = uhrzeit.format(DateTimeFormatter.ofPattern("HH:mm"));
-        this.datum = datum.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        this.uhrzeit = uhrzeit;
+        this.datum = datum;
     }
 
    // getter Methoden um auf die Werte zugreifen zu können, da Modifikator private
