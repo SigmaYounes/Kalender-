@@ -8,11 +8,27 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializer;
 
 public class Benutzerführung {
     private Scanner scanner = new Scanner(System.in);
     private ArrayList<Veranstaltung> veranstaltungen = new ArrayList<>();
     private static final String DATEINAME = "C:\\Users\\Younes\\IdeaProjects\\KalenderGson\\src\\main\\resources\\veranstaltungen.json";
+    public static final JsonSerializer<LocalDate> localDateSerializer = (src, typeOfSrc, context) ->
+            context.serialize(src.toString());
+
+    public static final JsonDeserializer<LocalDate> localDateDeserializer = (json, typeOfT, context) ->
+            LocalDate.parse(json.getAsString());
+
+    public static final JsonSerializer<LocalTime> localTimeSerializer = (src, typeOfSrc, context) ->
+            context.serialize(src.toString());
+
+    public static final JsonDeserializer<LocalTime> localTimeDeserializer = (json, typeOfT, context) ->
+            LocalTime.parse(json.getAsString());
+
+
+
 
     public void start() {
         while (true) {
@@ -89,7 +105,19 @@ public class Benutzerführung {
 
     private void speichernVeranstaltungen() {
         try (FileWriter writer = new FileWriter(DATEINAME)) {
-            Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
+            Gson gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .excludeFieldsWithoutExposeAnnotation()
+                    .registerTypeAdapter(LocalDate.class, (JsonSerializer<LocalDate>) (src, typeOfSrc, context) ->
+                            context.serialize(src.toString()))
+                    .registerTypeAdapter(LocalDate.class, (JsonDeserializer<LocalDate>) (json, typeOfT, context) ->
+                            LocalDate.parse(json.getAsString()))
+                    .registerTypeAdapter(LocalTime.class, (JsonSerializer<LocalTime>) (src, typeOfSrc, context) ->
+                            context.serialize(src.toString()))
+                    .registerTypeAdapter(LocalTime.class, (JsonDeserializer<LocalTime>) (json, typeOfT, context) ->
+                            LocalTime.parse(json.getAsString()))
+                    .create();
+
             gson.toJson(veranstaltungen, writer);
         } catch (IOException e) {
             System.out.println("Fehler beim Speichern der Veranstaltungen: " + e.getMessage());
