@@ -1,12 +1,16 @@
+/* Annotation aus der Gson-Bibliothek, um anzugeben,
+*  dass bestimmte Attribute für die JSON-Konvertierung berücksichtigt werden sollen.
+*/
 import com.google.gson.annotations.Expose;
 
-import java.time.LocalDate; /* Hier werdem die Klassen LocalDate und LocalTime aus dem Java.time packet importiert
-                            *  Dadurch wird später bei den Datums und Zeit Eingabe gewährleistet dass alles richtig
-                            *  formatiert ist*/
+// Folgende drei Pakete sind für Zeit- und Datumsformatierung zuständig
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class Veranstaltung {
+
+    // "@Expose"-Annotation --> nur dieses Attribute bei Serialisierung (in JSON) und Deserialisierung (aus JSON) durch Gson berücksichtigt
     @Expose
     private String name;
 
@@ -25,9 +29,8 @@ public class Veranstaltung {
     @Expose
     private LocalDate datum;
 
- // Hier wird der Konstruktor initialisiert - wenn Veranstaltungsobjekt erstellt wird, werden folgende Attribute mitgegeben:
-
-    public Veranstaltung(String name, String dresscode,String typ,String ort,LocalDate datum, LocalTime uhrzeit) {
+    // Hier wird der Konstruktor initialisiert - wenn Veranstaltungsobjekt erstellt wird, werden folgende Attribute mitgegeben:
+    public Veranstaltung(String name, String dresscode, String typ, String ort, LocalDate datum, LocalTime uhrzeit) {
         this.name = name;
         this.dresscode = dresscode;
         this.typ = typ;
@@ -36,8 +39,7 @@ public class Veranstaltung {
         this.datum = datum;
     }
 
-   // getter Methoden um auf die Werte zugreifen zu können, da Modifikator private
-
+    // getter Methoden um auf die Werte zugreifen zu können, da Modifikator private
     public String getName () {
         return name;
     }
@@ -61,6 +63,7 @@ public class Veranstaltung {
         return datum;
     }
 
+    // toString Methode, um Objekt in lesbare Textdarstellung auszugeben
     public String toString () {
        return "Veranstaltungsname:" + name + "\n" + "Dresscode:" + dresscode + "\n" + "Typ:" + typ + "\n" +
       "Ort:" + ort + "\n" + "Datum:" + datum.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + "\n" +

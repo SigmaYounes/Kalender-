@@ -11,10 +11,17 @@ import java.util.Scanner;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
 
-public class Benutzerführung {
+public class Benutzerfuehrung {
+    // Scanner für Benutzereingaben
     private Scanner scanner = new Scanner(System.in);
+
+    //Liste zur Speicherung der Veranstaltungen(importiert aus java.util)
     private ArrayList<Veranstaltung> veranstaltungen = new ArrayList<>();
-    private static final String DATEINAME = "C:\\Users\\Younes\\IdeaProjects\\KalenderGson\\src\\main\\resources\\veranstaltungen.json";
+
+    // Pfad zur JSON-Datei, in der die Veranstaltungen gespeichert werden
+    private static final String DATEINAME = ".\\veranstaltungen.json";
+
+    // Serializer und Deserializer für LocalDate
     public static final JsonSerializer<LocalDate> localDateSerializer = (src, typeOfSrc, context) ->
             context.serialize(src.toString());
 
@@ -28,8 +35,7 @@ public class Benutzerführung {
             LocalTime.parse(json.getAsString());
 
 
-
-
+    // Hauptmethode, die das Benutzerinterface startet
     public void start() {
         while (true) {
             System.out.println("Benutzerführung");
@@ -43,16 +49,17 @@ public class Benutzerführung {
             if (auswahl.equals("1")) {
                 veranstaltungHinzufuegen();
             } else if (auswahl.equals("2")) {
-                veranstaltungsübersicht();
+                veranstaltungsuebersicht();
             } else if (auswahl.equals("3")) {
                 System.out.println("Programm beendet.");
-                return;
+                return; // Beenden der Schleife und des Programms
             } else {
                 System.out.println("Ungültige Auswahl. Bitte erneut versuchen.");
             }
         }
     }
 
+    // Methode zum Hinzufügen einer neuen Veranstaltung
     private void veranstaltungHinzufuegen() {
         try {
             System.out.print("Geben Sie den Namen der Veranstaltung an: ");
@@ -73,7 +80,7 @@ public class Benutzerführung {
             System.out.print("Geben Sie das Datum an (dd.MM.yyyy): ");
             LocalDate datum = LocalDate.parse(scanner.nextLine(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 
-            Veranstaltung veranstaltung = new Veranstaltung(name, dresscode, typ, ort, datum, uhrzeit);
+            Veranstaltung veranstaltung = new Veranstaltung(name, dresscode, typ, ort, datum, uhrzeit); // Neue Veranstaltung erstellen und zur Liste hinzufügen
             veranstaltungen.add(veranstaltung);
 
             System.out.print("Möchten Sie diese Veranstaltung speichern? (Ja/Nein): ");
@@ -84,21 +91,21 @@ public class Benutzerführung {
             } else {
                 System.out.println("Die Veranstaltung wurde nicht gespeichert.");
             }
-        } catch (DateTimeParseException e) {
+        } catch (DateTimeParseException e) { //Fehlerbehandlung
             System.out.println("Ungültiges Datum- oder Zeitformat. Bitte verwenden Sie das Format dd.MM.yyyy für das Datum und HH:mm für die Uhrzeit.");
         } catch (Exception e) {
             System.out.println("Fehler beim Hinzufügen der Veranstaltung: " + e.getMessage());
         }
     }
 
-    private void veranstaltungsübersicht() {
+    // Methode zur Anzeige der Veranstaltungsübersicht
+    private void veranstaltungsuebersicht() {
         if (veranstaltungen.isEmpty()) {
             System.out.println("Es wurden noch keine Veranstaltungen hinzugefügt.");
         } else {
             System.out.println("Veranstaltungsübersicht:");
             for (Veranstaltung v : veranstaltungen) {
-                System.out.println(v);
-                System.out.println(); // Leerzeile zwischen Veranstaltungen
+                System.out.println(v + "\n"); // toString() wird implizit aufgerufen
             }
         }
     }
@@ -106,8 +113,11 @@ public class Benutzerführung {
     private void speichernVeranstaltungen() {
         try (FileWriter writer = new FileWriter(DATEINAME)) {
             Gson gson = new GsonBuilder()
-                    .setPrettyPrinting()
+                    .setPrettyPrinting() // Formatierung der JSON-Datei
+                    // Nur markierte Felder serialisieren (siehe Veranstaltung.java, Z. 12)
                     .excludeFieldsWithoutExposeAnnotation()
+
+                    // LocalDate und LocalTime müssen einzeln serialisiert werden
                     .registerTypeAdapter(LocalDate.class, (JsonSerializer<LocalDate>) (src, typeOfSrc, context) ->
                             context.serialize(src.toString()))
                     .registerTypeAdapter(LocalDate.class, (JsonDeserializer<LocalDate>) (json, typeOfT, context) ->
@@ -118,6 +128,7 @@ public class Benutzerführung {
                             LocalTime.parse(json.getAsString()))
                     .create();
 
+            // Veranstaltungen in Datei schreiben
             gson.toJson(veranstaltungen, writer);
         } catch (IOException e) {
             System.out.println("Fehler beim Speichern der Veranstaltungen: " + e.getMessage());
